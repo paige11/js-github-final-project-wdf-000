@@ -8,35 +8,32 @@ function createIssue(repoName, repoOwner, issueTitle, issueBody) {
   var url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/issues";
   var data = {title: issueTitle, body: issueBody}
   var JSONdata = JSON.stringify(data);
-  var interactor = new GithubInteractor('c196d215a87f293b848e6904118d2c66bec1ed21');
   $.ajax({
-    headers: {Authorization: 'token ' + interactor.token},
     url: url,
     data: JSONdata,
     type: 'POST',
     success: handleResponse,
-    error: handleError
+    error: handleError //response and error objects automatically passed along
   });
 }
 
 function submitForm() {
-  $('form').on('submit', function() {
+  $('form').on('submit', function(e) {
     var name = $('#repoName').val();
     var owner = $('#repoOwner').val();
     var title = $('#title').val();
     var body = $('#body').val();
     createIssue(name, owner, title, body);
+    e.preventDefault();
   });
 }
 
-function handleResponse() {
-  alert("success");
-  $('#issue').append()
+function handleResponse(response) {
+  $('#issue').append("<a href=" + response.html_url + ">" + response.title + "</a>")
 }
 
-function handleError() {
-  alert("fail");
-  return 'Post error: '
+function handleError(jqXHR, textStatus, error) { //
+  console.log('Post error: ' + error)
 }
 
 $(document).ready(submitForm);
